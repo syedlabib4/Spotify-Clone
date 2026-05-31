@@ -1,0 +1,22 @@
+{
+  "name": "spotify-mern-clone",
+  "version": "1.0.0",
+  "description": "Spotify MERN Clone - Full Stack Deployment",
+  "main": "api/index.js",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install",
+    "dev": "concurrently \"cd backend && npm start\" \"cd frontend && npm run dev\"",
+    "start": "node backend/src/server.js"
+  },
+  "engines": {
+    "node": "24.x"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "devDependencies": {}
+}
+
