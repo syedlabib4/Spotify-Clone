@@ -1,5 +1,6 @@
 const express =require("express")
 const cors = require("cors")
+const mongoose = require("mongoose")
 
 const cookieParser=require("cookie-parser")
 const app=express()
@@ -22,7 +23,13 @@ const allowedOrigins = [
 ].filter(url => url !== '');
 
 app.use(cors({ 
-  origin: allowedOrigins,
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin) || process.env.VERCEL) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow all in production for now
+    }
+  },
   credentials: true 
 }))
 app.use(express.json())
@@ -34,6 +41,21 @@ app.use((req, res, next) => {
     req.url = req.url.replace('/api', '');
   }
   next();
+});
+
+// Diagnostic health endpoint
+app.get("/health", (req, res) => {
+  const mongoState = mongoose.connection.readyState;
+  const stateMap = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
+  res.json({
+    status: 'ok',
+    mongoState: stateMap[mongoState] || 'unknown',
+    mongoStateCode: mongoState,
+    mongoEnvExists: !!process.env.MONGO,
+    mongoEnvPrefix: process.env.MONGO ? process.env.MONGO.substring(0, 20) + '...' : 'NOT SET',
+    vercelEnv: process.env.VERCEL || 'not on vercel',
+    nodeEnv: process.env.NODE_ENV || 'not set'
+  });
 });
 
 app.use("/auth",auth)
