@@ -1,6 +1,6 @@
 const mongoose=require("mongoose")
 
-const MONGO=process.env.MONGO
+const MONGO = process.env.MONGO ? process.env.MONGO.replace(/["']/g, "").trim() : "";
 
 async function connectDB(){
 try{
