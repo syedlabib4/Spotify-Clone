@@ -8,11 +8,10 @@ await mongoose.connect(MONGO)
 console.log("database is connected")
 
 }catch(err){
-
-
   console.log("database is not connected", err.message)
-  process.exit(1)
-
+  if (!process.env.VERCEL) {
+    process.exit(1)
+  }
 }
 }
 
