@@ -1,8 +1,13 @@
-require("dotenv").config()
 const app = require('../backend/src/app');
 const connectDB = require('../backend/src/db/db');
 
-// Connect to database
-connectDB()
+// Cache the connection promise so we only connect once across warm invocations
+let isConnected = false;
 
-module.exports = app;
+module.exports = async (req, res) => {
+  if (!isConnected) {
+    await connectDB();
+    isConnected = true;
+  }
+  return app(req, res);
+};
