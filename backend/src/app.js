@@ -28,8 +28,16 @@ app.use(cors({
 app.use(express.json())
 app.use(cookieParser())
 
-app.use("/api/auth",auth)
-app.use("/api/music",musicRouter)
+// Normalize API path prefixes for local development vs Vercel serverless functions
+app.use((req, res, next) => {
+  if (req.url.startsWith('/api')) {
+    req.url = req.url.replace('/api', '');
+  }
+  next();
+});
+
+app.use("/auth",auth)
+app.use("/music",musicRouter)
 
 
 module.exports=app
