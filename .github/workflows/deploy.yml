@@ -52,7 +52,7 @@ jobs:
           # Copy EB configuration .platform folder and root package files
           cp -r .platform build/
           cp package.json build/
-          cp package-lock.json build/
+          cp package-lock.json build/ || true
           
           # Create ZIP file
           cd build
