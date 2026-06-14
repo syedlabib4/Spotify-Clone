@@ -52,7 +52,7 @@ export default function Login() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="labib@gmail.com"
+                placeholder=""
                 className="input-field"
                 autoComplete="email"
               />

@@ -43,6 +43,14 @@ app.use((req, res, next) => {
   next();
 });
 
+const fs = require("fs");
+const path = require("path");
+
+const frontendDistPath = path.join(__dirname, "../../frontend/dist");
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+}
+
 // Diagnostic health endpoint
 app.get("/health", (req, res) => {
   const mongoState = mongoose.connection.readyState;
@@ -60,6 +68,20 @@ app.get("/health", (req, res) => {
 
 app.use("/auth",auth)
 app.use("/music",musicRouter)
+
+// Catch-all route: serve index.html for all non-API GET requests
+// Express 5 / path-to-regexp v8 requires named wildcards: /*splat
+app.get("/*splat", (req, res) => {
+  const indexPath = path.join(frontendDistPath, "index.html");
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).json({
+      message: "API endpoint not found (Frontend static build is missing)",
+      hint: "Make sure you run 'npm run build' inside the frontend directory."
+    });
+  }
+});
 
 
 // Global error handler middleware
