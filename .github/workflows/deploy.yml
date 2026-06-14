@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: 22
           cache: 'npm'
-          cache-dependency-path: './package-lock.json'
+          cache-dependency-path: 'frontend/package-lock.json'
 
       # 1. Build React Frontend
       - name: Install Frontend Dependencies
