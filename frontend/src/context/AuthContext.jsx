@@ -8,13 +8,17 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem('spotify_user');
-    if (stored) {
-      try {
-        setUser(JSON.parse(stored));
-      } catch {
-        localStorage.removeItem('spotify_user');
+    try {
+      const stored = localStorage.getItem('spotify_user');
+      if (stored) {
+        try {
+          setUser(JSON.parse(stored));
+        } catch {
+          localStorage.removeItem('spotify_user');
+        }
       }
+    } catch (err) {
+      console.warn("Could not read spotify_user from localStorage:", err);
     }
     setLoading(false);
   }, []);
@@ -28,8 +32,12 @@ export function AuthProvider({ children }) {
       role: res.data.role,
     };
     setUser(userData);
-    localStorage.setItem('spotify_user', JSON.stringify(userData));
-    localStorage.setItem('spotify_token', res.data.token);
+    try {
+      localStorage.setItem('spotify_user', JSON.stringify(userData));
+      localStorage.setItem('spotify_token', res.data.token);
+    } catch (err) {
+      console.warn("Could not write credentials to localStorage:", err);
+    }
     return userData;
   };
 
@@ -42,16 +50,24 @@ export function AuthProvider({ children }) {
       role: res.data.user.role,
     };
     setUser(userData);
-    localStorage.setItem('spotify_user', JSON.stringify(userData));
-    localStorage.setItem('spotify_token', res.data.token);
+    try {
+      localStorage.setItem('spotify_user', JSON.stringify(userData));
+      localStorage.setItem('spotify_token', res.data.token);
+    } catch (err) {
+      console.warn("Could not write credentials to localStorage:", err);
+    }
     return userData;
   };
 
   const logout = async () => {
     await api.post('/auth/logout');
     setUser(null);
-    localStorage.removeItem('spotify_user');
-    localStorage.removeItem('spotify_token');
+    try {
+      localStorage.removeItem('spotify_user');
+      localStorage.removeItem('spotify_token');
+    } catch (err) {
+      console.warn("Could not remove credentials from localStorage:", err);
+    }
   };
 
   return (
